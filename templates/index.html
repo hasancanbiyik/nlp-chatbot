@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NLP Chatbot</title>
+    <script>
+        async function sendMessage() {
+            const messageInput = document.getElementById("message");
+            const chatBox = document.getElementById("chat-box");
+            let message = messageInput.value.trim();
+            if (!message) return;
+            
+            // Append user's message to the chat
+            chatBox.innerHTML += `<p><strong>You:</strong> ${message}</p>`;
+            messageInput.value = "";
+            
+            // Send message to the Flask server
+            const response = await fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: message })
+            });
+            
+            const data = await response.json();
+            // Append bot's response to the chat
+            chatBox.innerHTML += `<p><strong>Bot:</strong> ${data.response}</p>`;
+            
+            // Auto-scroll to the bottom
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #chat-box {
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 300px;
+            overflow-y: scroll;
+            margin-bottom: 10px;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 8px;
+            margin-right: 10px;
+        }
+        button {
+            padding: 8px 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chat with the NLP Bot</h1>
+    <div id="chat-box"></div>
+    <input type="text" id="message" placeholder="Type your message here..." onkeydown="if(event.key === 'Enter') sendMessage()">
+    <button onclick="sendMessage()">Send</button>
+</body>
+</html>
